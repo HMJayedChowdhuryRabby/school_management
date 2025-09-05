@@ -14,7 +14,10 @@ app.use(helmet());
 
 
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: [
+    'http://localhost:5173',
+    'https://transcendent-eclair-ffb8b4.netlify.app'
+  ],
   credentials: true
 }));
 
