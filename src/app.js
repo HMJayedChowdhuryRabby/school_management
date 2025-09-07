@@ -32,23 +32,23 @@ mongoose.connect(process.env.MONGO_URI, {
 // Serve uploaded files statically
 // Serve uploaded PDFs and images from /uploads
 app.use('/uploads', (req, res, next) => {
-  const allowedOrigins = [
-    'http://localhost:5173',
-    'https://transcendent-eclair-ffb8b4.netlify.app'
-  ];
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-  }
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Cache-Control', 'no-store');
-  if (req.method === 'OPTIONS') {
-    res.header('Access-Control-Allow-Methods', 'GET,OPTIONS');
-    return res.sendStatus(200);
-  }
-  next();
-});
+      const allowedOrigins = [
+        'http://localhost:5173',
+        'https://transcendent-eclair-ffb8b4.netlify.app'
+      ];
+      const origin = req.headers.origin;
+      if (allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+      }
+      res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+      res.setHeader('Cache-Control', 'no-store');
+      if (req.method === 'OPTIONS') {
+        res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
+        return res.sendStatus(200);
+      }
+      next();
+    });
 app.use('/uploads', express.static(require('path').join(__dirname, '../public/uploads')));
 
 // Routes
