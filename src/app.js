@@ -43,6 +43,10 @@ app.use('/uploads', (req, res, next) => {
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   res.header('Access-Control-Allow-Credentials', 'true');
   res.header('Cache-Control', 'no-store');
+  if (req.method === 'OPTIONS') {
+    res.header('Access-Control-Allow-Methods', 'GET,OPTIONS');
+    return res.sendStatus(200);
+  }
   next();
 });
 app.use('/uploads', express.static(require('path').join(__dirname, '../public/uploads')));
