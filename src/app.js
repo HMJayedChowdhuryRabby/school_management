@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const helmet = require('helmet');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const path = require('path');
 const errorHandler = require('./middleware/errorHandler');
 
 // Load env
@@ -12,12 +13,14 @@ const app = express();
 app.use(express.json());
 app.use(helmet());
 
+// ✅ Allow API requests from Netlify & Localhost
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://transcendent-eclair-ffb8b4.netlify.app'
+];
 
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'https://transcendent-eclair-ffb8b4.netlify.app'
-  ],
+  origin: allowedOrigins,
   credentials: true
 }));
 
@@ -29,30 +32,18 @@ mongoose.connect(process.env.MONGO_URI, {
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error(err));
 
-// Serve uploaded files statically
-// Serve uploaded PDFs and images from /uploads
+// ✅ Serve uploaded files with correct CORS headers
 app.use('/uploads', (req, res, next) => {
-      const allowedOrigins = [
-        'http://localhost:5173',
-        'https://transcendent-eclair-ffb8b4.netlify.app'
-      ];
-      const origin = req.headers.origin;
-      if (allowedOrigins.includes(origin)) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-      }
-      res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-      res.setHeader('Access-Control-Allow-Credentials', 'true');
-      res.setHeader('Cache-Control', 'no-store');
-      if (req.method === 'OPTIONS') {
-        res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
-        return res.sendStatus(200);
-      }
-      next();
-    });
-app.use('/uploads', express.static(require('path').join(__dirname, '../public/uploads')));
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
+  }
+  res.header("Access-Control-Allow-Methods", "GET,OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+}, express.static(path.join(__dirname, '../public/uploads')));
 
 // Routes
-
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/user'));
 app.use('/api/teachers', require('./routes/teacher'));
