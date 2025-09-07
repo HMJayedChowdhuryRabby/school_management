@@ -34,21 +34,16 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // ✅ Serve uploaded files with correct CORS headers
 app.use('/uploads', (req, res, next) => {
-  // Use provided Origin header, or fallback to Netlify (so <img> works)
-  const origin = req.headers.origin || 'https://transcendent-eclair-ffb8b4.netlify.app';
-
-  if (allowedOrigins.includes(origin)) {
+  const origin = req.headers.origin;
+  if (origin && allowedOrigins.includes(origin)) {
     res.header("Access-Control-Allow-Origin", origin);
     res.header("Access-Control-Allow-Credentials", "true");
+    res.header("Access-Control-Allow-Methods", "GET,OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    if (req.method === "OPTIONS") {
+      return res.sendStatus(200);
+    }
   }
-
-  res.header("Access-Control-Allow-Methods", "GET,OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-
   next();
 }, express.static(path.join(__dirname, '../public/uploads')));
 
