@@ -32,7 +32,14 @@ mongoose.connect(process.env.MONGO_URI, {
 // Serve uploaded files statically
 // Serve uploaded PDFs and images from /uploads
 app.use('/uploads', (req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:5173');
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'https://transcendent-eclair-ffb8b4.netlify.app'
+  ];
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   res.header('Access-Control-Allow-Credentials', 'true');
   res.header('Cache-Control', 'no-store');
